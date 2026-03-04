@@ -1,0 +1,17 @@
+__pycache__
+*.pyc
+*.pyo
+.env
+.DS_Store
+colab_notebooks/
+data/
+.git
+.gitignore__pycache__
+*.pyc
+*.pyo
+.env
+.DS_Store
+colab_notebooks/
+data/
+.git
+.gitignore

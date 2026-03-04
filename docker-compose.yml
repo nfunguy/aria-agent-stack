@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+  opa:
+    image: openpolicyagent/opa:latest
+    ports:
+      - "8181:8181"
+    volumes:
+      - ./policies:/policies
+    command: run --server --log-level debug /policies
+
+  chroma:
+    image: chromadb/chroma:latest
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app/app
+      - ./agents:/app/agents
+      - ./data:/app/data
+    env_file:
+      - .env
+    depends_on:
+      - ollama
+      - opa
+      - chroma
+
+  frontend:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./frontend:/app/frontend
+    command: streamlit run frontend/app.py --server.port 8501 --server.address 0.0.0.0
+    depends_on:
+      - backend
+
+volumes:
+  ollama_data:
+  chroma_data:
